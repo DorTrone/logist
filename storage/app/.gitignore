@@ -1,0 +1,6 @@
+*
+!private/
+!public/
+!.gitignore
+!fsa_app.json
+!fsa_sms.json
