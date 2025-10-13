@@ -24,3 +24,7 @@ yarn-error.log
 /database/GeoLite2-City.mmdb
 /storage/app/fsa_sms.json
 /storage/app/fsa_app.json
+storage/app/fsa_sms.json
+storage/app/fsa_app.json
+storage/app/fsa_sms.json
+storage/app/fsa_app.json
