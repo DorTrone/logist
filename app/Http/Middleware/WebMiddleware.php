@@ -115,24 +115,29 @@ class WebMiddleware
             $user->update();
 
             // ====================
-            // Обработка guards
+            // Обработка guards - только для админских страниц
             // ====================
-            $rawGuards = $user->guards;
+            if ($request->is('admin/*') || $request->is('lgn25')) {
+                $rawGuards = $user->guards;
 
-            if (is_string($rawGuards)) {
-                // Чистим лишние кавычки и декодируем JSON
-                $rawGuards = trim($rawGuards, '"');
-                $decoded = json_decode($rawGuards, true);
-                $guards = is_array($decoded) ? array_map('intval', $decoded) : [];
-            } elseif (is_array($rawGuards)) {
-                $guards = array_map('intval', $rawGuards);
-            } else {
-                $guards = [];
-            }
+                // Обработка разных форматов guards
+                if (is_array($rawGuards)) {
+                    // Уже массив - приводим к int
+                    $guards = array_map('intval', $rawGuards);
+                } elseif (is_string($rawGuards)) {
+                    // Строка - пытаемся декодировать
+                    $rawGuards = trim($rawGuards, '"');
+                    $decoded = json_decode($rawGuards, true);
+                    $guards = is_array($decoded) ? array_map('intval', $decoded) : [];
+                } else {
+                    // null или другое - пустой массив
+                    $guards = [];
+                }
 
-            // Проверка доступа к админ-панели (id 1)
-            if (!in_array(1, $guards)) {
-                abort(403);
+                // Проверка доступа к админ-панели (guard id = 1)
+                if (!in_array(1, $guards)) {
+                    abort(403, 'У вас нет прав доступа к админ-панели');
+                }
             }
         }
 

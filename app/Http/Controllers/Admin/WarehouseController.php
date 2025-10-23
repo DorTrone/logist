@@ -98,8 +98,8 @@ class WarehouseController extends Controller
 {
     $warehouses = Warehouse::query();
     
-    return datatables($warehouses)
-        ->editColumn('actions', function ($warehouse) {
+    return datatables()->of($warehouses)
+        ->addColumn('actions', function ($warehouse) {
             return view('admin.warehouses.actions', compact('warehouse'))->render();
         })
         ->rawColumns(['actions'])

@@ -11,12 +11,23 @@ class UserPolicy
      */
     protected function getPermissions(User $user): array
     {
+        // Если permissions пустой или null
+        if (empty($user->permissions)) {
+            return [];
+        }
+
+        // Если уже массив
         if (is_array($user->permissions)) {
             return array_map('intval', $user->permissions);
         }
 
-        $decoded = json_decode($user->permissions, true);
-        return is_array($decoded) ? array_map('intval', $decoded) : [];
+        // Если строка JSON
+        if (is_string($user->permissions)) {
+            $decoded = json_decode($user->permissions, true);
+            return is_array($decoded) ? array_map('intval', $decoded) : [];
+        }
+
+        return [];
     }
 
     public function packagesPanel(User $user): bool
@@ -122,8 +133,5 @@ class UserPolicy
     public function warehouses(User $user): bool
     {
         return in_array(25, $this->getPermissions($user));
-    }
-    public function index() {
-        dd(auth()->user()->id, auth()->user()->permissions);
     }
 }

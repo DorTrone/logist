@@ -17,13 +17,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->redirectGuestsTo(fn() => abort(404));
+        $middleware->redirectGuestsTo(fn(Request $request) => 
+    $request->is('admin/*') ? route('login') : null);
         $middleware->redirectUsersTo(fn() => route('admin.dashboard'));
         $middleware->web(append: [
-            \App\Http\Middleware\WebMiddleware::class,
-            \App\Http\Middleware\LocaleMiddleware::class,
-        ]);
-        $middleware->api(append: [
+    \App\Http\Middleware\LocaleMiddleware::class,
+]);
+
+// WebMiddleware только для админки
+$middleware->group('admin', [
+    \App\Http\Middleware\WebMiddleware::class,
+]);        $middleware->api(append: [
             \App\Http\Middleware\ApiMiddleware::class,
         ]);
     })
